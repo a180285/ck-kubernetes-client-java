@@ -204,26 +204,6 @@ spec:
                     service:
                       description: Service defines the template for the associated Kubernetes Service object.
                       properties:
-                        metadata:
-                          description: ObjectMeta is the metadata of the service. The name and namespace provided here are managed by ECK and will be ignored.
-                          properties:
-                            annotations:
-                              additionalProperties:
-                                type: string
-                              type: object
-                            finalizers:
-                              items:
-                                type: string
-                              type: array
-                            labels:
-                              additionalProperties:
-                                type: string
-                              type: object
-                            name:
-                              type: string
-                            namespace:
-                              type: string
-                          type: object
                         spec:
                           description: Spec is the specification of the service.
                           properties:
