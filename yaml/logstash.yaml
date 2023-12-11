@@ -4,10 +4,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.1
-  labels:
-    app.kubernetes.io/instance: 'elastic-operator'
-    app.kubernetes.io/name: 'eck-operator-crds'
-    app.kubernetes.io/version: '2.10.0'
   name: logstashes.logstash.k8s.elastic.co
 spec:
   group: logstash.k8s.elastic.co
@@ -22,23 +18,7 @@ spec:
     singular: logstash
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - description: Available nodes
-      jsonPath: .status.availableNodes
-      name: available
-      type: integer
-    - description: Expected nodes
-      jsonPath: .status.expectedNodes
-      name: expected
-      type: integer
-    - jsonPath: .metadata.creationTimestamp
-      name: age
-      type: date
-    - description: Logstash version
-      jsonPath: .status.version
-      name: version
-      type: string
-    name: v1alpha1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Logstash is the Schema for the logstashes API
