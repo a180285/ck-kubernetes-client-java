@@ -18,7 +18,7 @@ spec:
     singular: logstash
   scope: Namespaced
   versions:
-  - name: v1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Logstash is the Schema for the logstashes API
@@ -38,6 +38,143 @@ spec:
                 description: Config holds the Logstash configuration. At most one of [`Config`, `ConfigRef`] can be specified.
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
+              configRef:
+                description: ConfigRef contains a reference to an existing Kubernetes Secret holding the Logstash configuration. Logstash settings must be specified as yaml, under a single "logstash.yml" entry. At most one of [`Config`, `ConfigRef`] can be specified.
+                properties:
+                  secretName:
+                    description: SecretName is the name of the secret.
+                    type: string
+                type: object
+              count:
+                format: int32
+                type: integer
+              elasticsearchRefs:
+                description: ElasticsearchRefs are references to Elasticsearch clusters running in the same Kubernetes cluster.
+                items:
+                  description: ElasticsearchCluster is a named reference to an Elasticsearch cluster which can be used in a Logstash pipeline.
+                  properties:
+                    clusterName:
+                      description: ClusterName is an alias for the cluster to be used to refer to the Elasticsearch cluster in Logstash configuration files, and will be used to identify "named clusters" in Logstash
+                      minLength: 1
+                      type: string
+                    name:
+                      description: Name of an existing Kubernetes object corresponding to an Elastic resource managed by ECK.
+                      type: string
+                    namespace:
+                      description: Namespace of the Kubernetes object. If empty, defaults to the current namespace.
+                      type: string
+                    secretName:
+                      description: 'SecretName is the name of an existing Kubernetes secret that contains connection information for associating an Elastic resource not managed by the operator. The referenced secret must contain the following: - `url`: the URL to reach the Elastic resource - `username`: the username of the user to be authenticated to the Elastic resource - `password`: the password of the user to be authenticated to the Elastic resource - `ca.crt`: the CA certificate in PEM format (optional). This field cannot be used in combination with the other fields name, namespace or serviceName.'
+                      type: string
+                    serviceName:
+                      description: ServiceName is the name of an existing Kubernetes service which is used to make requests to the referenced object. It has to be in the same namespace as the referenced resource. If left empty, the default HTTP service of the referenced resource is used.
+                      type: string
+                  type: object
+                type: array
+              image:
+                description: Image is the Logstash Docker image to deploy. Version and Type have to match the Logstash in the image.
+                type: string
+              monitoring:
+                description: Monitoring enables you to collect and ship log and monitoring data of this Logstash. Metricbeat and Filebeat are deployed in the same Pod as sidecars and each one sends data to one or two different Elasticsearch monitoring clusters running in the same Kubernetes cluster.
+                properties:
+                  logs:
+                    description: Logs holds references to Elasticsearch clusters which receive log data from an associated resource.
+                    properties:
+                      elasticsearchRefs:
+                        description: ElasticsearchRefs is a reference to a list of monitoring Elasticsearch clusters running in the same Kubernetes cluster. Due to existing limitations, only a single Elasticsearch cluster is currently supported.
+                        items:
+                          description: ObjectSelector defines a reference to a Kubernetes object which can be an Elastic resource managed by the operator or a Secret describing an external Elastic resource not managed by the operator.
+                          properties:
+                            name:
+                              description: Name of an existing Kubernetes object corresponding to an Elastic resource managed by ECK.
+                              type: string
+                            namespace:
+                              description: Namespace of the Kubernetes object. If empty, defaults to the current namespace.
+                              type: string
+                            secretName:
+                              description: 'SecretName is the name of an existing Kubernetes secret that contains connection information for associating an Elastic resource not managed by the operator. The referenced secret must contain the following: - `url`: the URL to reach the Elastic resource - `username`: the username of the user to be authenticated to the Elastic resource - `password`: the password of the user to be authenticated to the Elastic resource - `ca.crt`: the CA certificate in PEM format (optional). This field cannot be used in combination with the other fields name, namespace or serviceName.'
+                              type: string
+                            serviceName:
+                              description: ServiceName is the name of an existing Kubernetes service which is used to make requests to the referenced object. It has to be in the same namespace as the referenced resource. If left empty, the default HTTP service of the referenced resource is used.
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                  metrics:
+                    description: Metrics holds references to Elasticsearch clusters which receive monitoring data from this resource.
+                    properties:
+                      elasticsearchRefs:
+                        description: ElasticsearchRefs is a reference to a list of monitoring Elasticsearch clusters running in the same Kubernetes cluster. Due to existing limitations, only a single Elasticsearch cluster is currently supported.
+                        items:
+                          description: ObjectSelector defines a reference to a Kubernetes object which can be an Elastic resource managed by the operator or a Secret describing an external Elastic resource not managed by the operator.
+                          properties:
+                            name:
+                              description: Name of an existing Kubernetes object corresponding to an Elastic resource managed by ECK.
+                              type: string
+                            namespace:
+                              description: Namespace of the Kubernetes object. If empty, defaults to the current namespace.
+                              type: string
+                            secretName:
+                              description: 'SecretName is the name of an existing Kubernetes secret that contains connection information for associating an Elastic resource not managed by the operator. The referenced secret must contain the following: - `url`: the URL to reach the Elastic resource - `username`: the username of the user to be authenticated to the Elastic resource - `password`: the password of the user to be authenticated to the Elastic resource - `ca.crt`: the CA certificate in PEM format (optional). This field cannot be used in combination with the other fields name, namespace or serviceName.'
+                              type: string
+                            serviceName:
+                              description: ServiceName is the name of an existing Kubernetes service which is used to make requests to the referenced object. It has to be in the same namespace as the referenced resource. If left empty, the default HTTP service of the referenced resource is used.
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                type: object
+              pipelines:
+                description: Pipelines holds the Logstash Pipelines. At most one of [`Pipelines`, `PipelinesRef`] can be specified.
+                items:
+                  type: object
+                type: array
+                x-kubernetes-preserve-unknown-fields: true
+              pipelinesRef:
+                description: PipelinesRef contains a reference to an existing Kubernetes Secret holding the Logstash Pipelines. Logstash pipelines must be specified as yaml, under a single "pipelines.yml" entry. At most one of [`Pipelines`, `PipelinesRef`] can be specified.
+                properties:
+                  secretName:
+                    description: SecretName is the name of the secret.
+                    type: string
+                type: object
+              podTemplate:
+                description: PodTemplate provides customisation options for the Logstash pods.
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              revisionHistoryLimit:
+                description: RevisionHistoryLimit is the number of revisions to retain to allow rollback in the underlying StatefulSet.
+                format: int32
+                type: integer
+              secureSettings:
+                description: SecureSettings is a list of references to Kubernetes Secrets containing sensitive configuration options for the Logstash. Secrets data can be then referenced in the Logstash config using the Secret's keys or as specified in `Entries` field of each SecureSetting.
+                items:
+                  description: SecretSource defines a data source based on a Kubernetes Secret.
+                  properties:
+                    entries:
+                      description: Entries define how to project each key-value pair in the secret to filesystem paths. If not defined, all keys will be projected to similarly named paths in the filesystem. If defined, only the specified keys will be projected to the corresponding paths.
+                      items:
+                        description: KeyToPath defines how to map a key in a Secret object to a filesystem path.
+                        properties:
+                          key:
+                            description: Key is the key contained in the secret.
+                            type: string
+                          path:
+                            description: Path is the relative file path to map the key to. Path must not be an absolute file path and must not contain any ".." components.
+                            type: string
+                        required:
+                        - key
+                        type: object
+                      type: array
+                    secretName:
+                      description: SecretName is the name of the secret.
+                      type: string
+                  required:
+                  - secretName
+                  type: object
+                type: array
+              serviceAccountName:
+                description: ServiceAccountName is used to check access from the current resource to Elasticsearch resource in a different namespace. Can only be used if ECK is enforcing RBAC on references.
+                type: string
             required:
             - config
             type: object
